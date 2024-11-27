@@ -56,14 +56,16 @@ struct ChatsView: View {
                     
                     
                     Group {
-                        chatItemView(name: "大猪蹄子", message: "[图片]", time: "下午 1:51", icon: "avatr_6")
-                        chatItemView(name: "目标财务自由群", message: "陈晓婷: 我朋友上次 5.60 个人还没成功", time: "10月11日", icon: "avatr_1")
-                        chatItemView(name: "订阅号", message: "[7条] 北上广深均已取消普通住房和非...", time: "下午 2:36", icon: "avatr_2")
-                        chatItemView(name: "研究社读者 8 群", message: "\"高翔胡七简\"与群里其他人都不是朋友关...", time: "下午 2:24", icon: "avatr_3")
-                        chatItemView(name: "广发信用卡", message: "[服务通知] 还款提醒", time: "下午 2:17", icon: "avatr_4", isUnread: true)
-                        chatItemView(name: "文件传输助手", message: "[文件] 用户中心.pdf", time: "下午 1:55", icon: "avatr_5")
-                        chatItemView(name: "盛派网络小助手", message: ".NET Conf China 2024 大会个人和社区...", time: "下午 1:55", icon: "avatr_7", isUnread: true)
-                        chatItemView(name: "盛派网络小助手", message: ".NET Conf China 2024 大会个人和社区...", time: "下午 1:55", icon: "avatr_7", isUnread: true)
+                        chatItemView(name: "大猪蹄子", message: "我现在就这个态度，怎么了", time: "下午 1:51", icon: "avatr_6")
+                        chatItemView(name: "AI陪吵", message: "下午一起逛街", time: "下午 2:36", icon: "avatr_2")
+                        chatItemView(name: "富婆", message: "明天一起逛街", time: "下午 2:24", icon: "avatr_3")
+                        chatItemView(name: "富婆2", message: "[照片]", time: "下午 2:17", icon: "avatr_4", isUnread: true)
+                        chatItemView(name: "富婆3", message: "[照片]", time: "下午 1:55", icon: "avatr_5")
+                        chatItemView(name: "闺蜜1", message: "还是上个地方去喝酒吧", time: "11月11日", icon: "avatr_10")
+                        chatItemView(name: "闺蜜2", message: "我这次不去了", time: "11月11日", icon: "avatr_1")
+                        chatItemView(name: "闺蜜3", message: "我已经到了", time: "11月11日", icon: "avatr_8")
+                        chatItemView(name: "闺蜜4", message: "下次见~", time: "11月11日", icon: "avatr_9")
+                     
                         //                sectionInfoEditPrivacy
                         //                SectionHeaderBackground()
                         //                        Text("First Item")

@@ -23,11 +23,14 @@ struct ChatContentView: View {
     @State private var isCustomViewVisible: Bool = true // 控制自定义视图显示
     @State  var cModels:[ConversationsModel]? = nil;
     @State private var showAlert = false
+    @State private var showAlertEnd = false
+    @State private var isPresented = false // 假设这是一个控制音乐播放状态的布尔值
     
     
     var body: some View {
         
         NavigationStack {
+            
             VStack(spacing:0){
                 ScrollViewReader { scrollViewProxy in
                     ScrollView() {
@@ -43,14 +46,14 @@ struct ChatContentView: View {
                                             .frame(width: 6, height: 10)
                                             .rotationEffect(Angle(degrees: 0))
                                             .offset(x: -1*hSpaceWidth, y:(avatarSize-10)/2)
-                                        Image("avatr_2") // 替换为用户头像的图片名称
+                                        Image("avatr_13") // 替换为用户头像的图片名称
                                             .resizable()
                                             .frame(width: avatarSize, height: avatarSize)
                                             .clipShape(RoundedRectangle(
                                                 cornerRadius:6
                                             ))
                                     } else {
-                                        Image("avatr_1") // 替换为机器人的头像图片名称
+                                        Image("avatr_6") // 替换为机器人的头像图片名称
                                             .resizable()
                                             .frame(width: avatarSize, height: avatarSize)
                                             .clipShape(RoundedRectangle(
@@ -76,13 +79,13 @@ struct ChatContentView: View {
                         .onChange(of: messages.count) { _ in
                             // 自动滚动到最新消息（可选）
                             if let lastMessage = messages.last {
-//                                withAnimation {
-                                    scrollViewProxy.scrollTo(lastMessage.id, anchor: .bottom)
-//                                }
+                                //                                withAnimation {
+                                scrollViewProxy.scrollTo(lastMessage.id, anchor: .bottom)
+                                //                                }
                             }
                         }
-
-
+                    
+                    
                 }
                 // 输入框
                 HStack {
@@ -139,42 +142,70 @@ struct ChatContentView: View {
                 }
                 Divider()
                 Spacer().frame(height: 20)
-                if suggests.count>0
-                {
-                    ForEach(suggests, id: \.self) { suggest in
-                        Button(action: {
-                            // 异步执行消息追加和延迟
-                            DispatchQueue.main.async {
-                                self.messages.append(ChatMessage(text: suggest, isSentByUser: true))
-                            }
-                            self.suggests=[];
-                            
-                            // 使用异步队列来实现延迟，而不是阻塞主线程
-                            DispatchQueue.global().asyncAfter(deadline: .now() + 3) {
-                                DispatchQueue.main.async {
-                                    // 安全地访问 messages 的最后一个元素
-                                    
-                                    let m = GetNextMessage(currStyle: self.currStyle, message: lastHeMessage)
-                                    
-                                    // 检查 GetNextMessage 的返回值是否为 nil
-                                    if let message = m {
-                                        self.messages.append(ChatMessage(text: message, isSentByUser: false))
-                                        lastHeMessage=message;
-                                        GetAISuggest()
+                HStack{
+                    VStack{
+                        if suggests.count>0
+                        {
+                            ForEach(suggests, id: \.self) { suggest in
+                                Button(action: {
+                                    // 异步执行消息追加和延迟
+                                    DispatchQueue.main.async {
+                                        self.messages.append(ChatMessage(text: suggest, isSentByUser: true))
                                     }
-                                }
+                                    self.suggests=[];
+                                    
+                                    // 使用异步队列来实现延迟，而不是阻塞主线程
+                                    DispatchQueue.global().asyncAfter(deadline: .now() + 3) {
+                                        DispatchQueue.main.async {
+                                            // 安全地访问 messages 的最后一个元素
+                                            
+                                            let m = GetNextMessage(currStyle: self.currStyle, message: lastHeMessage)
+                                            
+                                            // 检查 GetNextMessage 的返回值是否为 nil
+                                            if let message = m {
+                                                self.messages.append(ChatMessage(text: message, isSentByUser: false))
+                                                lastHeMessage=message;
+                                                GetAISuggest()
+                                            }
+                                        }
+                                    }
+                                    
+                                }, label:{  Text(suggest)
+                                }).foregroundStyle(Color.text_primary)
                             }
                             
-                        }, label:{  Text(suggest)
-                        }).foregroundStyle(Color.text_primary)
+                            .padding(10)
+                        }else {
+                            EmptyView().frame(height: 400)
+                        }
+                        
                     }
                     
-                    .padding(10)
-                }else {
-                    EmptyView().frame(height: 400)
+                    VStack{
+                        if suggests.count>0
+                        {
+                            Button(action: {
+                                GetAISuggest()
+                            },label:{
+                                Text("换一批").frame(height:100)
+                            })
+                            
+                            Button(action:{
+                                self.showAlertEnd = true
+                            },label: { Text("胜负\r\n已分").frame(height:100)})
+                            .alert("确认胜负已分，结束此次battle吗？", isPresented: $showAlertEnd) {
+                                Button("是", role: .destructive) {
+                                    self.isPresented=true;
+                                    print("是按钮被点击")
+                                }
+                                Button("否", role: .cancel) {
+                                    // 处理否按钮的点击事件
+                                    print("否按钮被点击")
+                                }
+                            }
+                        }
+                    }
                 }
-                
-                
             }
             .navigationTitle("大猪蹄子")
             .navigationBarTitleDisplayMode(.inline)
@@ -192,6 +223,28 @@ struct ChatContentView: View {
                     Image(systemName: "ellipsis").foregroundColor(Color.black)
                 })
             .navigationViewStyle(.stack)
+            .fullScreenCover(isPresented: $isPresented) {
+                
+                
+                // 遮罩层内容
+                VStack {
+                    Spacer()
+                    Text("请欣赏胜利✌🏻专属音乐...")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color.textInfo200)
+                        .padding()
+                        .onTapGesture(perform: {
+                            self.isPresented = false
+                        })
+                    
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity) // 使遮罩层充满整个屏幕
+                .background(Color.black.opacity(0.1)) // 半透明黑色背景
+                .edgesIgnoringSafeArea(.all) // 忽略安全区域，使遮罩层显示在屏幕的所有边缘
+                .animation(.easeInOut, value: isPresented) // 动画效果
+            }
         }
         .onAppear{
             var a :[ConversationsModel]? = JSONUtils.read(fileName: "battle")
@@ -244,7 +297,9 @@ struct ChatContentView: View {
         DispatchQueue.main.async {
             // 调用 GetNextMessage 函数并更新 suggests
             if let sArray = GetCurrResponse(currStyle: currStyle, message: lastHeMessage) {
-                suggests = sArray
+                // 打乱数组
+                let shuffledArray = sArray.shuffled()
+                suggests =  Array(shuffledArray.prefix(3))
                 
             }
             else{
